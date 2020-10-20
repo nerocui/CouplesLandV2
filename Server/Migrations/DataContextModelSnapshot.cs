@@ -168,12 +168,6 @@ namespace Server.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("text");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -217,6 +211,24 @@ namespace Server.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("Server.Models.UserNickName", b =>
+                {
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NickNameUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NickName")
+                        .HasColumnType("text");
+
+                    b.HasKey("AppUserId", "NickNameUserId");
+
+                    b.HasIndex("NickNameUserId");
+
+                    b.ToTable("UserNickNames");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -268,6 +280,30 @@ namespace Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Server.Models.UserNickName", b =>
+                {
+                    b.HasOne("Server.Models.AppUser", "AppUser")
+                        .WithMany("UserNickNames")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.AppUser", "NickNameUser")
+                        .WithMany()
+                        .HasForeignKey("NickNameUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("NickNameUser");
+                });
+
+            modelBuilder.Entity("Server.Models.AppUser", b =>
+                {
+                    b.Navigation("UserNickNames");
                 });
 #pragma warning restore 612, 618
         }

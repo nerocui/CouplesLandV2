@@ -16,64 +16,49 @@ namespace Server.Data
             RoleManager<IdentityRole> roleManager)
         {
             if (await userManager.Users.AnyAsync()) return;
-            var bfFirstName = config.GetSection("Users:BFFirstName").Value;
-            var bFLastName =  config.GetSection("Users:BFLastName").Value;
             var bFUserName =  config.GetSection("Users:BFUserName").Value;
             var bFPassword =  config.GetSection("Users:BFPassword").Value;
-            var gFFirstName = config.GetSection("Users:GFFirstName").Value;
-            var gFLastName =  config.GetSection("Users:GFLastName").Value;
             var gFUserName =  config.GetSection("Users:GFUserName").Value;
             var gFPassword =  config.GetSection("Users:GFPassword").Value;
-            
-            Console.WriteLine("================");
-            Console.Write("Info: ");
-            Console.WriteLine(bfFirstName);
-            Console.WriteLine(bFLastName);
-            Console.WriteLine(bFUserName);
-            Console.WriteLine(bFPassword);
-            Console.WriteLine(gFFirstName);
-            Console.WriteLine(gFLastName);
-            Console.WriteLine(gFUserName);
-            Console.WriteLine(gFPassword);
-            Console.WriteLine("================");
-            
-            var bfRole = new IdentityRole{Name = "BoyFriend"};
-            var gfRole = new IdentityRole{Name = "GirlFriend"};
+            var adminPassword =  config.GetSection("Users:adminPassword").Value;
+
             var roles = new List<IdentityRole>
             {
-                bfRole,
-                gfRole,
+                new IdentityRole{Name = "BoyFriend"},
+                new IdentityRole{Name = "GirlFriend"},
+                new IdentityRole{Name = "Admin"},
             };
             foreach (var role in roles)
             {
                 await roleManager.CreateAsync(role);
             }
-            
+
             var bf = new AppUser
             {
-                FirstName = bfFirstName,
-                LastName = bFLastName,
                 UserName = bFUserName,
             };
             var gf = new AppUser
             {
-                FirstName = gFFirstName,
-                LastName = gFLastName,
                 UserName = gFUserName,
+            };
+            var admin = new AppUser
+            {
+                UserName = "admin",
             };
             var bfResult = await userManager.CreateAsync(bf, bFPassword);
             var gfResult = await userManager.CreateAsync(gf, gFPassword);
-            if (bfResult.Succeeded)
+            var adminResult = await userManager.CreateAsync(admin, adminPassword);
+            if (bfResult.Succeeded && gfResult.Succeeded && adminResult.Succeeded)
             {
-                Console.WriteLine("Insert boy friend succeed");
-                Console.WriteLine($"User ID is: {bf.Id}");
+                Console.WriteLine("User Initialization Succeeded");
             }
             else
             {
-                Console.WriteLine($"Failed to insert user{bfResult.ToString()}");
+                Console.WriteLine($"Failed to insert user");
             }
             await userManager.AddToRolesAsync(bf, new List<string>{"BoyFriend"});
             await userManager.AddToRolesAsync(gf, new List<string>{"GirlFriend"});
+            await userManager.AddToRolesAsync(admin, new List<string>{"Admin"});
         }
     }
 }

@@ -27,8 +27,6 @@ namespace Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -155,6 +153,30 @@ namespace Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserNickNames",
+                columns: table => new
+                {
+                    AppUserId = table.Column<string>(type: "text", nullable: false),
+                    NickNameUserId = table.Column<string>(type: "text", nullable: false),
+                    NickName = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserNickNames", x => new { x.AppUserId, x.NickNameUserId });
+                    table.ForeignKey(
+                        name: "FK_UserNickNames_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserNickNames_AspNetUsers_NickNameUserId",
+                        column: x => x.NickNameUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -191,6 +213,11 @@ namespace Server.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNickNames_NickNameUserId",
+                table: "UserNickNames",
+                column: "NickNameUserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -209,6 +236,9 @@ namespace Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "UserNickNames");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
