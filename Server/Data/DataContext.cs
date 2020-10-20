@@ -5,13 +5,15 @@ using Server.Models;
 
 namespace Server.Data
 {
-    public class DataContext : IdentityDbContext<AppUser, AppRole, string,
-        IdentityUserClaim<string>, AppUserRole, IdentityUserLogin<string>,
-        IdentityRoleClaim<string>, IdentityUserToken<string>>
+    public class DataContext : IdentityDbContext<AppUser>
     {
         public DataContext(DbContextOptions options) : base(options)
         {
         }
-        
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
     }
 }
