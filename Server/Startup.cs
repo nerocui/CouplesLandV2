@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Server.Data;
+using Server.Data.Repositories;
+using Server.Hubs;
 using Server.Models;
 using Server.Services;
 
@@ -75,6 +77,7 @@ namespace Server
                 options.AddPolicy("RequireGirlfriendRole", policy => policy.RequireRole("Girlfriend"));
                 options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
             });
+            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
@@ -108,6 +111,7 @@ namespace Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<MessageHub>("hubs/message");
             });
         }
     }

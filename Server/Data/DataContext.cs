@@ -10,6 +10,7 @@ namespace Server.Data
         {
         }
         public DbSet<UserNickName> UserNickNames { get; set; }
+        public DbSet<Message> Messages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -19,6 +20,16 @@ namespace Server.Data
                 .OnDelete(DeleteBehavior.NoAction);
             builder.Entity<UserNickName>()
                 .HasKey(x => new {x.AppUserId, x.NickNameUserId});
+            builder.Entity<Message>()
+                .HasOne(x => x.Sender)
+                .WithMany(sender => sender.MessagesSent)
+                .HasForeignKey(x => x.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<Message>()
+                .HasOne(x => x.Recipient)
+                .WithMany(sender => sender.MessagesReceived)
+                .HasForeignKey(x => x.RecipientId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
